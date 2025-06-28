@@ -1,6 +1,7 @@
 import shutil
 from datetime import datetime
 from pathlib import Path
+from src.config.settings import RAW_DIR
 
 def mover_archivo_descargas_raw(nombre_archivo: str, nuevo_nombre: str = "archivo"):
 
@@ -12,7 +13,7 @@ def mover_archivo_descargas_raw(nombre_archivo: str, nuevo_nombre: str = "archiv
         raise FileNotFoundError(f"No se encontró el archivo: {origen}")
     
     # Ruta destino
-    destino_dir = Path("data/raw")
+    destino_dir = RAW_DIR
     destino_dir.mkdir(parents=True, exist_ok=True)
 
     # Nuevo nombre
