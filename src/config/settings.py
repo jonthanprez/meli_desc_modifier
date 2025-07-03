@@ -1,4 +1,5 @@
 from pathlib import Path
+import logging
 
 # Ruta raíz del proyecto
 ROOT_DIR = Path(__file__).resolve().parents[2]
@@ -28,3 +29,17 @@ COLUMNAS_TRANSFORM = [
     'Descripcion'
 ]
 COLUMNAS_LOAD = COLUMNAS_EXTRACT
+
+# Logger
+def get_logger():
+    logger = logging.getLogger("pipeline")
+    if not logger.handlers:
+        handler = logging.FileHandler("logs/pipeline.log")
+        formatter = logging.Formatter(
+            "%(asctime)s [%(levelname)s] %(name)s - %(message)s"
+        )
+        handler.setFormatter(formatter)
+        logger.setLevel(logging.INFO)
+        logger.addHandler(handler)
+    return logger
+

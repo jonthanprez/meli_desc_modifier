@@ -2,11 +2,11 @@ import pandas as pd
 import re
 import logging
 
-from src.config.settings import COLUMNAS_TRANSFORM
+from config.settings import COLUMNAS_TRANSFORM
 
 logger = logging.getLogger(__name__)
 
-# Texto que reemplazará al bloque de "Detalles del Servicio"
+# Texto remplazo de "Detalles del Servicio"
 NUEVO_BLOQUE = """DETALLES DEL SERVICIO
 
 • Verificación de compatibilidad por número de serie (VIN/NIV):
@@ -35,6 +35,10 @@ Sin embargo, posterior a la venta, usted puede comunicarse con nosotros directam
 """
 
 def reemplazar_detalles_servicio(texto: str) -> str:
+
+    if not isinstance(texto, str):
+        return texto  # No es texto, no se transforma
+    
     try:
         # Evitar reemplazo si ya está el NUEVO_BLOQUE
         if NUEVO_BLOQUE.strip() in texto:
@@ -65,7 +69,41 @@ def transformar_descripciones(df: pd.DataFrame) -> pd.DataFrame:
     columnas_faltantes = [col for col in COLUMNAS_TRANSFORM if col not in df.columns]
     if columnas_faltantes:
         raise ValueError(f"Faltan columnas necesarias: {columnas_faltantes}")
-    
+
     df = df.copy()
-    df['Descripcion'] = df['Descripcion'].apply(reemplazar_detalles_servicio)
+
+    contador = {"reemplazadas": 0, "ya_existe": 0, "no_encontrado": 0}
+
+    def _aplicar(texto):
+
+        if not isinstance(texto, str):
+            contador["no_encontrado"] += 1
+            return texto
+
+        if NUEVO_BLOQUE.strip() in texto:
+            contador["ya_existe"] += 1
+            return texto
+        
+        patron = re.compile(
+            r"(DETALLES DE(L)? SERVICIO.*?(con nosotros directamente\.?|con el vendedor directamente\.?))",
+            re.DOTALL | re.IGNORECASE
+        )
+
+        match = patron.search(texto)
+        if not match:
+            contador["no_encontrado"] += 1
+            return texto
+        
+        contador["reemplazadas"] += 1
+        inicio = texto[:match.start()]
+        final = texto[match.end():]
+        return f"{inicio.strip()}\n\n{NUEVO_BLOQUE}{final.strip()}"
+
+    df['Descripcion'] = df['Descripcion'].apply(_aplicar)
+
+    logger.info(
+        f"Filas procesadas: {len(df)} | Reemplazadas: {contador['reemplazadas']} | "
+        f"Ya contenían el bloque: {contador['ya_existe']} | Sin coincidencias: {contador['no_encontrado']}"
+    )
+
     return df

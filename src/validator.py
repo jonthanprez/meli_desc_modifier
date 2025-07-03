@@ -1,4 +1,4 @@
-from src.config.settings import COLUMNAS_EXTRACT, COLUMNAS_LOAD, COLUMNAS_TRANSFORM
+from config.settings import COLUMNAS_EXTRACT, COLUMNAS_LOAD, COLUMNAS_TRANSFORM
 
 def validar_columnas(df, columnas_esperadas: list, contexto: str=""):
     faltantes = [col for col in columnas_esperadas if col not in df.columns]

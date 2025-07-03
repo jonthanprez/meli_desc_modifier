@@ -1,7 +1,7 @@
 import shutil
 from datetime import datetime
 from pathlib import Path
-from src.config.settings import RAW_DIR, DESCARGAS_DIR
+from config.settings import RAW_DIR, DESCARGAS_DIR
 
 def mover_archivo_descargas_raw(nombre_archivo: str, nuevo_nombre: str = "archivo"):
 
