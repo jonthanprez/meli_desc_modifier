@@ -1,6 +1,6 @@
 import pandas as pd
 import pytest
-from etl.transform import transformar_descripciones, NUEVO_BLOQUE
+from src.etl.transform import transformar_descripciones, NUEVO_BLOQUE
 
 @pytest.fixture
 def df_con_bloque():

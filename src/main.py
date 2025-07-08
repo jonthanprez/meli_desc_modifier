@@ -2,7 +2,6 @@ from etl.extract import cargar_excel
 from etl.transform import transformar_descripciones
 from etl.load import guardar_excel
 from config import settings
-import logging
 
 logger = settings.get_logger()
 
@@ -28,4 +27,4 @@ def run_pipeline(nombre_archivo_entrada: str, nombre_archivo_salida: str):
     logger.info("Pipeline completado exitosamente")
 
 if __name__ == "__main__":
-    run_pipeline(settings.MORAL_RAW, "persona_moral_transformado.xlsx")
+    run_pipeline(settings.FISICA_RAW, "persona_fisica_transformado.xlsx")

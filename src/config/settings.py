@@ -2,12 +2,11 @@ from pathlib import Path
 import logging
 
 # Ruta raíz del proyecto
-ROOT_DIR = Path(__file__).resolve().parents[2]
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Rutas clave
 DATA_DIR = ROOT_DIR / "data"
 RAW_DIR = DATA_DIR / "raw"
-PROCESSED_DIR = DATA_DIR / "processed"
 OUTPUT_DIR = DATA_DIR / "output"
 
 DESCARGAS_DIR = "/mnt/c/Users/jonth/Downloads"
@@ -16,6 +15,7 @@ NOTEBOOKS_DIR = ROOT_DIR / "notebooks"
 SCRIPTS_DIR = ROOT_DIR / "scripts"
 SRC_DIR = ROOT_DIR / "src"
 ETL_DIR = SRC_DIR / "etl"
+LOGS_DIR = ROOT_DIR / "logs"
 
 # Nombres de archivos
 MORAL_RAW = "persona_moral_20250627_095010.xlsx"
@@ -34,7 +34,7 @@ COLUMNAS_LOAD = COLUMNAS_EXTRACT
 def get_logger():
     logger = logging.getLogger("pipeline")
     if not logger.handlers:
-        handler = logging.FileHandler("logs/pipeline.log")
+        handler = logging.FileHandler(LOGS_DIR / "pipeline.log")
         formatter = logging.Formatter(
             "%(asctime)s [%(levelname)s] %(name)s - %(message)s"
         )

@@ -1,10 +1,10 @@
 import pandas as pd
-from etl.load import guardar_excel
-from config import settings
+from src.etl.load import guardar_excel
+from src.config import settings
 
 def test_guardar_excel(tmp_path, monkeypatch):
     df = pd.DataFrame({"col1": [1, 2], "col2": ["a", "b"]})
-    monkeypatch.setattr(settings, "PROCESSED_DIR", tmp_path)
+    monkeypatch.setattr(settings, "OUTPUT_DIR", tmp_path)
 
     nombre_archivo = "archivo_guardado.xlsx"
     guardar_excel(df, nombre_archivo)

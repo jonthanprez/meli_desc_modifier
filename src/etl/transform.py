@@ -1,10 +1,9 @@
 import pandas as pd
 import re
-import logging
+from src.config import settings
 
-from config.settings import COLUMNAS_TRANSFORM
+logger = settings.get_logger()
 
-logger = logging.getLogger(__name__)
 
 # Texto remplazo de "Detalles del Servicio"
 NUEVO_BLOQUE = """DETALLES DEL SERVICIO
@@ -66,7 +65,7 @@ def reemplazar_detalles_servicio(texto: str) -> str:
 
     
 def transformar_descripciones(df: pd.DataFrame) -> pd.DataFrame:
-    columnas_faltantes = [col for col in COLUMNAS_TRANSFORM if col not in df.columns]
+    columnas_faltantes = [col for col in settings.COLUMNAS_TRANSFORM if col not in df.columns]
     if columnas_faltantes:
         raise ValueError(f"Faltan columnas necesarias: {columnas_faltantes}")
 

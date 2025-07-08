@@ -1,9 +1,6 @@
 import pandas as pd
-from pathlib import Path
-import logging
-
-from config import settings
-from validator import validar_columnas_extract
+from src.config import settings
+from src.validator import validar_columnas_extract
 
 logger = settings.get_logger()
 
