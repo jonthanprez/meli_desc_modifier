@@ -21,6 +21,6 @@ def cargar_excel(nombre_archivo: str) -> pd.DataFrame:
         validar_columnas_extract(df)
         return df
 
-    except Exception as e:
-        logger.exception(f"Error al leer el archivo {nombre_archivo}: {e}")
+    except Exception:
+        logger.exception(f"Error al leer el archivo {nombre_archivo}")
         raise

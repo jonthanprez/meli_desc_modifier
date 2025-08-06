@@ -2,19 +2,20 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
-from config.settings import RAW_DIR, DESCARGAS_DIR
+from config import settings
+logger = settings.get_logger()
 
 def mover_archivo_descargas_raw(nombre_archivo: str, nuevo_nombre: str = "archivo"):
 
     # Ruta de descargas
-    descargas = Path(DESCARGAS_DIR)
-    origen = descargas / nombre_archivo
+    origen = settings.DESCARGAS_DIR / nombre_archivo
 
     if not origen.exists():
+        logger.error(f"no se econtró el archivo {origen}")
         raise FileNotFoundError(f"No se encontró el archivo: {origen}")
     
     # Ruta destino
-    destino_dir = RAW_DIR
+    destino_dir = settings.RAW_DIR
     destino_dir.mkdir(parents=True, exist_ok=True)
 
     # Nuevo nombre
@@ -24,4 +25,4 @@ def mover_archivo_descargas_raw(nombre_archivo: str, nuevo_nombre: str = "archiv
 
     # Copiar
     shutil.copy(origen, destino)
-    print(f"Archivo copiado como : {destino}")
+    logger.info(f"Archivo correctamente copiado a {destino} como {nuevo_nombre}")

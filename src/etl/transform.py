@@ -4,7 +4,6 @@ from src.config import settings
 
 logger = settings.get_logger()
 
-
 # Texto remplazo de "Detalles del Servicio"
 NUEVO_BLOQUE = """DETALLES DEL SERVICIO
 
@@ -32,37 +31,7 @@ Si deseas realizar la devolución del producto, especifica que \"llegó en buena
 No podemos proporcionar datos de contacto, cumpliendo con las políticas de MercadoLibre.
 Sin embargo, posterior a la venta, usted puede comunicarse con nosotros directamente.
 """
-
-def reemplazar_detalles_servicio(texto: str) -> str:
-
-    if not isinstance(texto, str):
-        return texto  # No es texto, no se transforma
     
-    try:
-        # Evitar reemplazo si ya está el NUEVO_BLOQUE
-        if NUEVO_BLOQUE.strip() in texto:
-            return texto
-
-        # Detectar el bloque desde "DETALLES DEL SERVICIO" hasta una de las frases finales
-        patron = re.compile(
-            r"(DETALLES DE(L)? SERVICIO.*?(con nosotros directamente\.?|con el vendedor directamente\.?))",
-            re.DOTALL | re.IGNORECASE
-        )
-        match = patron.search(texto)
-
-        if not match:
-            logger.warning("No se encontró el bloque de DETALLES DEL SERVICIO en un texto.")
-            return texto  # Devuelve el original si no encontró el patrón
-
-        inicio = texto[:match.start()]  # Conserva lo que está antes del bloque
-        final = texto[match.end():]     # Conserva lo que está después del bloque
-
-        return f"{inicio.strip()}\n\n{NUEVO_BLOQUE}\n{final.strip()}"
-
-    except Exception as e:
-        logger.exception(f"Error al reemplazar bloque de detalles del servicio: {e}")
-        return texto
-
     
 def transformar_descripciones(df: pd.DataFrame) -> pd.DataFrame:
     columnas_faltantes = [col for col in settings.COLUMNAS_TRANSFORM if col not in df.columns]
@@ -71,6 +40,7 @@ def transformar_descripciones(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df.copy()
 
+    # Contador de Estado
     contador = {"reemplazadas": 0, "ya_existe": 0, "no_encontrado": 0}
 
     def _aplicar(texto):
@@ -87,8 +57,8 @@ def transformar_descripciones(df: pd.DataFrame) -> pd.DataFrame:
             r"(DETALLES DE(L)? SERVICIO.*?(con nosotros directamente\.?|con el vendedor directamente\.?))",
             re.DOTALL | re.IGNORECASE
         )
-
         match = patron.search(texto)
+
         if not match:
             contador["no_encontrado"] += 1
             return texto
@@ -101,8 +71,8 @@ def transformar_descripciones(df: pd.DataFrame) -> pd.DataFrame:
     df['Descripcion'] = df['Descripcion'].apply(_aplicar)
 
     logger.info(
-        f"Filas procesadas: {len(df)} | Reemplazadas: {contador['reemplazadas']} | "
-        f"Ya contenían el bloque: {contador['ya_existe']} | Sin coincidencias: {contador['no_encontrado']}"
+        f"[transform] Total filas: {len(df)} | Reemplazadas: {contador['reemplazadas']} | "
+        f"Ya estaban bien: {contador['ya_existe']} | Sin bloque identificable: {contador['no_encontrado']}"
     )
 
     return df

@@ -9,7 +9,7 @@ DATA_DIR = ROOT_DIR / "data"
 RAW_DIR = DATA_DIR / "raw"
 OUTPUT_DIR = DATA_DIR / "output"
 
-DESCARGAS_DIR = "/mnt/c/Users/jonth/Downloads"
+DESCARGAS_DIR = Path("/mnt/c/Users/jonth/Downloads")
 
 NOTEBOOKS_DIR = ROOT_DIR / "notebooks"
 SCRIPTS_DIR = ROOT_DIR / "scripts"

@@ -1,6 +1,20 @@
+# Entorno virtual y dependencias locales
+.venv/
 __pycache__/
 *.pyc
+
+# Archivos sensibles
+.env
 *.log
-data/
-logs/
-.venv/
+*.sqlite
+*.db
+
+# Archivos temporales
+*.csv
+*.xlsx
+.ipynb_checkpoints/
+.DS_Store
+
+# Carpeta de tests temporales
+htmlcov/
+.coverage
