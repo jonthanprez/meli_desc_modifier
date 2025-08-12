@@ -5,6 +5,8 @@ from typing import Dict
 import pandas as pd
 from src.config import settings
 
+from src.validator import validar_columnas_transform
+
 logger = settings.get_logger()
 
 if not getattr(settings, "NUEVO_BLOQUE_SERVICIO", "").strip():
@@ -80,10 +82,8 @@ def transformar_descripciones(df: pd.DataFrame) -> pd.DataFrame:
         Returns:
             DataFrame transformado
     """
-    columnas_faltantes = [col for col in getattr(settings, "COLUMNAS_TRANSFORM", ["Descripcion"]) if col not in df.columns]
-    if columnas_faltantes:
-        raise ValueError(f"Faltan columnas necesarias: {columnas_faltantes}")
-    
+    validar_columnas_transform(df)
+
     stats = {"reemplazadas": 0, "ya_existe": 0, "no_encontrado": 0}
 
     df_out = df.copy()

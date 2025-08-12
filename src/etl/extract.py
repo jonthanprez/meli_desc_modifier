@@ -86,7 +86,7 @@ def cargar_excel(
         raise ValueError(msg)
     
     if validate_cols:
-        validar_columnas_extract(df)
+        validar_columnas_extract(df) #strict=True
 
     logger.info(f"Excel cargado: {len(df):,} filas, {len(df.columns)} columnas.")
     return df

@@ -7,6 +7,7 @@ import pandas as pd
 from pandas import DataFrame
 
 from src.config import settings
+from src.validator import validar_columnas_load
 
 logger = settings.get_logger()
 
@@ -45,6 +46,8 @@ def guardar_excel(
         overwrite: Si False y el archivo existe, lanza FileExistsError.
         freeze_header: Si True, congela la primera fila (encabezados).
     """
+    validar_columnas_load(df)
+    
     salida = _resolver_salida(nombre_archivo)
     _asegurar_directorio(salida)
 
@@ -103,6 +106,7 @@ def guardar_csv(
     overwrite: bool = True,
 ) -> None:
     """Guarda un DataFrame a CSV de forma atómica."""
+
     salida = _resolver_salida(nombre_archivo)
     _asegurar_directorio(salida)
 
