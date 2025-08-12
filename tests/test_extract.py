@@ -1,42 +1,44 @@
 import pandas as pd
 import pytest
-from pathlib import Path
-from src.etl.extract import cargar_excel
+from src.etl.extract import cargar_excel, cargar_tabular
+from src.validator import SchemaError
 from src.config import settings
 
-nombre_archivo = "archivo_test.xlsx"
+def test_cargar_excel_ok(sample_df, escribir_excel):
+    path = settings.RAW_DIR / "insumo.xlsx"
+    escribir_excel(sample_df, path)
 
-def test_cargar_excel_exitoso(tmp_path, monkeypatch):
-    # Crea archivo temporal con pandas
-    archivo = tmp_path / nombre_archivo
-    df_original = pd.DataFrame({
-    "ID": [1, 2],                          # → dos filas de muestra
-    "Titulo": ["A", "B"],
-    "Descripcion": ["Desc A", "Desc B"],
-    "Status": ["Activo", "Inactivo"],
-    "SKU": ["SKU1", "SKU2"],
-    "Marca": ["MarcaA", "MarcaB"],
-    "Parte": ["ParteX", "ParteY"]
-    })
-    df_original.to_excel(archivo, index=False)
+    df = cargar_excel("insumo.xlsx")  # ruta relativa a RAW_DIR
+    assert not df.empty
+    assert list(df.columns) == ["Titulo", "Descripcion", "Precio"]
+    assert len(df) == 2
 
-    # Parcheamos RAW_DIR en settings
-    monkeypatch.setattr(settings, "RAW_DIR", tmp_path)
+def test_cargar_excel_usecols(sample_df, escribir_excel):
+    path = settings.RAW_DIR / "insumo.xlsx"
+    escribir_excel(sample_df, path)
 
-    df_cargado = cargar_excel(nombre_archivo)
-    pd.testing.assert_frame_equal(df_original, df_cargado)
+    df = cargar_excel("insumo.xlsx", usecols=["Titulo", "Descripcion"])
+    assert list(df.columns) == ["Titulo", "Descripcion"]
+    assert len(df) == 2
 
-def test_archivo_no_existe(monkeypatch):
-    # Parcheamos RAW_DIR con ruta falsa
-    monkeypatch.setattr(settings, "RAW_DIR", Path("/ruta/falsa"))
-
+def test_cargar_excel_archivo_no_existe():
     with pytest.raises(FileNotFoundError):
-        cargar_excel("inexistente.xlsx")
+        cargar_excel("no_existe.xlsx")
 
-def test_archivo_vacio(tmp_path, monkeypatch):
-    archivo = tmp_path / "vacio.xlsx"
-    pd.DataFrame().to_excel(archivo, index=False)
-    monkeypatch.setattr(settings, "RAW_DIR", tmp_path)
+def test_cargar_tabular_csv(sample_df, escribir_csv):
+    path = settings.RAW_DIR / "insumo.csv"
+    escribir_csv(sample_df, path)
 
-    with pytest.raises(ValueError, match="Faltan columnas requeridas"):
-        cargar_excel("vacio.xlsx")
+    df = cargar_tabular("insumo.csv", usecols=["Titulo", "Descripcion"])
+    assert list(df.columns) == ["Titulo", "Descripcion"]
+    assert len(df) == 2
+
+def test_extract_valida_columnas_faltantes(sample_df, escribir_excel, monkeypatch):
+    # columna inexistente
+    monkeypatch.setattr(settings, "COLUMNAS_EXTRACT", ["Titulo", "Descripcion", "X"])
+    path = settings.RAW_DIR / "insumo.xlsx"
+    escribir_excel(sample_df, path)
+
+    # validar_columnas_extract debe lanzar error dentro de cargar_excel
+    with pytest.raises(SchemaError):
+        cargar_excel("insumo.xlsx")
