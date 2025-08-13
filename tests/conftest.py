@@ -26,7 +26,7 @@ def _configure_settings_for_tests(tmp_path_factory):
     settings.RAW_DIR = Path(raw)
     settings.OUTPUT_DIR = Path(out)
 
-    # Contratos de columnas por etapa (lo que validan tus funciones)
+    # Contratos de columnas por etapa
     settings.COLUMNAS_EXTRACT = ["Titulo", "Descripcion", "Precio"]
     settings.COLUMNAS_TRANSFORM = ["Titulo", "Descripcion"]
     settings.COLUMNAS_LOAD = ["Titulo", "Descripcion", "Precio"]
