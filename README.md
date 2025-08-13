@@ -52,7 +52,7 @@ meli_desc_modifier/
 
 ## Uso
 
-### 1Colocar tu archivo de entrada
+### Colocar tu archivo de entrada
 Guarda el archivo Excel o CSV en la carpeta:
 ```
 data/raw/
