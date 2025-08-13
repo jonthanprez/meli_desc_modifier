@@ -10,7 +10,7 @@ def test_transform_reemplaza_bloque(sample_df):
     assert len(df_out) == len(sample_df)
     assert "Descripcion" in df_out.columns
 
-    # La primera fila tenía un bloque clásico → debe reemplazarse por el NUEVO_BLOQUE
+    # La primera fila tenía un bloque clásico -> debe reemplazarse por el NUEVO_BLOQUE
     nuevo = settings.NUEVO_BLOQUE_SERVICIO.strip()
     assert nuevo in df_out.loc[0, "Descripcion"]
 
