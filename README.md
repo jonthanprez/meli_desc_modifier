@@ -1,7 +1,7 @@
 # Meli Desc Modifier
 
 ETL profesional para **modificar masivamente descripciones** de productos en archivos **Excel/CSV**, reemplazando el bloque de "DETALLES DEL SERVICIO" por un nuevo texto predefinido.  
-Diseñado para integrarse en flujos de trabajo de **Mercado Libre → WooCommerce** sin alterar información personalizada posterior al bloque.
+Diseñado para integrarse en flujos de trabajo de **Mercado Libre → WooCommerce** sin alterar información personalizada posterior o anterior al bloque.
 
 ---
 
