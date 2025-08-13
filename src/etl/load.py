@@ -14,7 +14,7 @@ logger = settings.get_logger()
 def _resolver_salida(nombre_archivo: str | Path) -> Path:
     "Resuelve la ruta final dentro de OUTPUT_DIR si es relativa"
     ruta = Path(nombre_archivo)
-    if not ruta.is_absolute:
+    if not ruta.is_absolute():
         ruta = settings.OUTPUT_DIR / ruta
     return ruta.resolve()
 

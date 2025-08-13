@@ -84,17 +84,18 @@ def transformar_descripciones(df: pd.DataFrame) -> pd.DataFrame:
     """
     validar_columnas_transform(df)
 
-    stats = {"reemplazadas": 0, "ya_existe": 0, "no_encontrado": 0}
+    stats = {"reemplazadas": 0, "ya_existe": 0, "no_encontrado": 0, "tipo_invalido": 0}
 
     df_out = df.copy()
     df_out["Descripcion"] = df_out["Descripcion"].map(lambda x: _reemplazar_bloque(x, stats))
 
     logger.info(
-        "[transform] Total: %s | Reemplazadas: %s | Ya estaba el bloque: %s | Sin bloque: %s",
+        "[transform] Total: %s | Reemplazadas: %s | Ya estaba el bloque: %s | Sin bloque: %s | Tipo inválido: %s",
         len(df_out),
         stats["reemplazadas"],
         stats["ya_existe"],
         stats["no_encontrado"],
+        stats["tipo_invalido"],
     )
 
     return df_out

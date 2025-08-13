@@ -1,32 +1,39 @@
-import pandas as pd
-from src.etl.transform import transformar_descripciones, NUEVO_BLOQUE
-from src.config import settings
 import pytest
+import pandas as pd
+from src.config import settings
+from src.etl.transform import transformar_descripciones
 from src.validator import SchemaError
 
 def test_transform_reemplaza_bloque(sample_df):
-    out = transformar_descripciones(sample_df)
-    # Fila 0 tenía bloque viejo; debe contener el NUEVO_BLOQUE
-    assert NUEVO_BLOQUE in out.loc[0, "Descripcion"]
-    # Fila 1 no tenía bloque; debe quedar igual
-    assert out.loc[1, "Descripcion"] == sample_df.loc[1, "Descripcion"]
+    df_out = transformar_descripciones(sample_df)
+    # Debe conservar filas y columnas
+    assert len(df_out) == len(sample_df)
+    assert "Descripcion" in df_out.columns
+
+    # La primera fila tenía un bloque clásico → debe reemplazarse por el NUEVO_BLOQUE
+    nuevo = settings.NUEVO_BLOQUE_SERVICIO.strip()
+    assert nuevo in df_out.loc[0, "Descripcion"]
 
 def test_transform_no_duplica_si_ya_existe(sample_df):
-    # Inserta el bloque actualizado para la fila 0
-    sample_df.loc[0, "Descripcion"] = f"Intro\n\n{NUEVO_BLOQUE}\n\nOutro"
-    out = transformar_descripciones(sample_df)
-    texto = out.loc[0, "Descripcion"]
-    # Debe aparecer solo una vez el encabezado
-    assert texto.count("DETALLES DEL SERVICIO") == 1
+    # Inserta el bloque nuevo ya presente en la fila 1 para probar no-duplicación
+    nuevo = settings.NUEVO_BLOQUE_SERVICIO.strip()
+    sample_df2 = sample_df.copy()
+    sample_df2.loc[1, "Descripcion"] = f"{nuevo}\n\nTexto final"
 
-def test_transform_columnas_faltantes(monkeypatch):
-    df = pd.DataFrame({"Titulo": ["A"]})
-    monkeypatch.setattr(settings, "COLUMNAS_TRANSFORM", ["Descripcion"])
+    df_out = transformar_descripciones(sample_df2)
+
+    desc = df_out.loc[1, "Descripcion"]
+    # El bloque nuevo debe estar exactamente una vez
+    assert desc.count(nuevo) == 1
+
+def test_transform_columnas_faltantes(sample_df):
+    df_bad = sample_df.drop(columns=["Descripcion"])
     with pytest.raises(SchemaError):
-        transformar_descripciones(df)
+        transformar_descripciones(df_bad)
 
 def test_transform_resiste_variaciones_encabezado(sample_df):
-    # Variante del encabezado: "DETALLES DE SERVICIO"
-    sample_df.loc[0, "Descripcion"] = "DETALLES DE SERVICIO ... con nosotros directamente."
-    out = transformar_descripciones(sample_df)
-    assert NUEVO_BLOQUE in out.loc[0, "Descripcion"]
+    # Fila 0 usa "DETALLES DEL SERVICIO", fila 1 "DETALLES DE SERVICIO"
+    df_out = transformar_descripciones(sample_df)
+    nuevo = settings.NUEVO_BLOQUE_SERVICIO.strip()
+    assert nuevo in df_out.loc[0, "Descripcion"]
+    assert nuevo in df_out.loc[1, "Descripcion"]
